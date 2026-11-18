@@ -1,1 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Group Project Accountability Tracker | MGIS130</title>
+  <style>
+    :root {
+      --primary: #f76902; /* RIT Orange accent */
+      --primary-dark: #d95b00;
+      --bg: #f4f6f9;
+      --surface: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --radius: 10px;
+    }
 
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 24px 16px;
+    }
+
+    .container {
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    header {
+      background: var(--surface);
+      padding: 20px 24px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .header-title h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .header-title p {
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      padding: 9px 14px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: all 0.15s ease;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-secondary {
+      background: #f1f5f9;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+
+    .btn-danger-ghost {
+      background: transparent;
+      color: var(--danger);
+      padding: 4px 8px;
+      font-size: 0.8rem;
+    }
+
+    .btn-danger-ghost:hover {
+      background: #fee2e2;
+    }
+
+    /* Cards & Grid */
+    .grid-top {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 780px) {
+      .grid-top {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .card h2 {
+      font-size: 1.05rem;
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Progress Bars */
+    .progress-track {
+      width: 100%;
+      height: 12px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 8px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 999px;
+      transition: width 0.3s ease;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* Member Contribution List */
+    .member-item {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .member-item:last-child {
+      border-bottom: none;
+    }
+
+    .member-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .badge {
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-good {
+      background: #dcfce7;
+      color: var(--success);
+    }
+
+    .badge-warn {
+      background: #fef3c7;
+      color: var(--warning);
+    }
+
+    .badge-behind {
+      background: #fee2e2;
+      color: var(--danger);
+    }
+
+    /* Forms */
+    .form-inline {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 2fr 1.2fr 0.8fr 1fr auto;
+      gap: 10px;
+      margin-bottom: 18px;
+      align-items: end;
+    }
+
+    @media (max-width: 780px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.88rem;
+      background: #fff;
+    }
+
+    input:focus, select:focus {
+      outline: 2px solid rgba(247, 105, 2, 0.25);
+      border-color: var(--primary);
+    }
+
+    /* Task Table */
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .task-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .task-row.completed {
+      background: #f8fafc;
+      opacity: 0.78;
+    }
+
+    .task-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .task-left input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .task-title {
+      font-weight: 600;
+      font-size: 0.94rem;
+    }
+
+    .task-row.completed .task-title {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+
+    .task-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .pill {
+      background: #f1f5f9;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .overdue-tag {
+      color: var(--danger);
+      font-weight: 700;
+    }
+
+    /* Modal for Report Export */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.5);
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 100;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      background: #fff;
+      width: 100%;
+      max-width: 600px;
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .modal textarea {
+      width: 100%;
+      height: 240px;
+      margin: 12px 0;
+      padding: 12px;
+      font-family: monospace;
+      font-size: 0.84rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #f8fafc;
+      resize: vertical;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Header -->
+  <header>
+    <div class="header-title">
+      <h1 id="projectTitleDisplay">MGIS130 Capstone Team</h1>
+      <p>Group Project Accountability &amp; Contribution Tracker</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-primary" onclick="openReportModal()">Export Peer Evaluation Report</button>
+      <button class="btn-secondary" onclick="resetDemoData()">Reset Demo Data</button>
+    </div>
+  </header>
+
+  <!-- Top Metrics Grid -->
+  <div class="grid-top">
+    <!-- Overall Project Health -->
+    <div class="card">
+      <h2>Overall Project Velocity</h2>
+      <div style="font-size: 2rem; font-weight: 800; color: var(--primary);" id="overallPercentText">0%</div>
+      <div class="progress-track">
+        <div class="progress-fill" id="overallProgressBar" style="width: 0%;"></div>
+      </div>
+      <div class="stat-row">
+        <span id="hoursSummaryText">0 / 0 effort hrs completed</span>
+        <span id="tasksSummaryText">0 / 0 tasks</span>
+      </div>
+      <hr style="border: none; border-top: 1px solid var(--border); margin: 16px 0;" />
+      <p style="font-size: 0.83rem; color: var(--muted);">
+        <strong>Fair Share Target:</strong> With <span id="memberCountText">0</span> members, equal contribution is
+        <strong id="fairShareText">0%</strong> per teammate.
+      </p>
+    </div>
+
+    <!-- Individual Contribution Breakdown -->
+    <div class="card">
+      <h2>Team Contribution Breakdown</h2>
+      <div id="memberStatsList"></div>
+
+      <!-- Add Member Inline Form -->
+      <form class="form-inline" onsubmit="handleAddMember(event)">
+        <input type="text" id="newMemberInput" placeholder="Add teammate name (e.g., Taylor)" required />
+        <button type="submit" class="btn-secondary">+ Add Member</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Task Board & Input -->
+  <div class="card">
+    <h2>Project Deliverables &amp; Task Assignments</h2>
+
+    <!-- Add Task Form -->
+    <form class="form-grid" onsubmit="handleAddTask(event)">
+      <div>
+        <label for="taskTitleInput">Task / Deliverable Name</label>
+        <input type="text" id="taskTitleInput" placeholder="e.g., Build UI Dashboard Mockup" required />
+      </div>
+      <div>
+        <label for="taskAssigneeSelect">Assigned Member</label>
+        <select id="taskAssigneeSelect" required></select>
+      </div>
+      <div>
+        <label for="taskHoursInput">Effort (Hrs)</label>
+        <input type="number" id="taskHoursInput" min="1" max="50" value="3" required />
+      </div>
+      <div>
+        <label for="taskDueInput">Due Date</label>
+        <input type="date" id="taskDueInput" required />
+      </div>
+      <button type="submit" class="btn-primary">+ Add Task</button>
+    </form>
+
+    <!-- Task List Container -->
+    <div class="task-list" id="taskListContainer"></div>
+  </div>
+</div>
+
+<!-- Export Report Modal -->
+<div class="modal-backdrop" id="reportModal">
+  <div class="modal">
+    <h2>Instructor &amp; Peer Evaluation Summary</h2>
+    <p style="font-size: 0.85rem; color: var(--muted);">
+      Auto-generated from completed effort logs and milestone deadlines. Ready for myCourses submission.
+    </p>
+    <textarea id="reportTextArea" readonly></textarea>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeReportModal()">Close</button>
+      <button class="btn-primary" id="copyReportBtn" onclick="copyReportToClipboard()">Copy to Clipboard</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ==========================================================================
+     1. DATA LAYER (Information Storage & Seed Data)
+     ========================================================================== */
+  const STORAGE_KEY = "mgis130_project_tracker_v1";
+
+  const DEFAULT_SEED_DATA = {
+    projectName: "MGIS130 Capstone Team",
+    members: [
+      { id: "m1", name: "Alex (Lead)" },
+      { id: "m2", name: "Sam (Dev)" },
+      { id: "m3", name: "Jordan (Design)" }
+    ],
+    tasks: [
+      {
+        id: "t1",
+        title: "Draft 1-Page Project Plan & Architecture",
+        assigneeId: "m1",
+        hours: 4,
+        dueDate: "2026-10-30",
+        completed: true
+      },
+      {
+        id: "t2",
+        title: "Build Data Schema & LocalStorage Persistence",
+        assigneeId: "m2",
+        hours: 5,
+        dueDate: "2026-11-06",
+        completed: true
+      },
+      {
+        id: "t3",
+        title: "Implement Contribution Ratio Math Engine",
+        assigneeId: "m1",
+        hours: 3,
+        dueDate: "2026-11-13",
+        completed: true
+      },
+      {
+        id: "t4",
+        title: "Style Responsive Dashboard & Progress Bars",
+        assigneeId: "m3",
+        hours: 4,
+        dueDate: "2026-11-15",
+        completed: false
+      },
+      {
+        id: "t5",
+        title: "Prepare 5-Minute Live Demo Slide Deck",
+        assigneeId: "m3",
+        hours: 3,
+        dueDate: "2026-11-28",
+        completed: false
+      }
+    ]
+  };
+
+  let appState = loadState();
+
+  function loadState() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error("Corrupt local storage, resetting to seed.", e);
+      }
+    }
+    return JSON.parse(JSON.stringify(DEFAULT_SEED_DATA));
+  }
+
+  function saveState() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+  }
+
+  function resetDemoData() {
+    appState = JSON.parse(JSON.stringify(DEFAULT_SEED_DATA));
+    saveState();
+    renderApp();
+  }
+
+  /* ==========================================================================
+     2. PROCESSING LAYER (Business Logic & Metrics Calculations)
+     ========================================================================== */
+  function calculateProjectMetrics() {
+    const totalTasks = appState.tasks.length;
+    const completedTasks = appState.tasks.filter(t => t.completed).length;
+
+    const totalHours = appState.tasks.reduce((sum, t) => sum + Number(t.hours), 0);
+    const completedHours = appState.tasks
+      .filter(t => t.completed)
+      .reduce((sum, t) => sum + Number(t.hours), 0);
+
+    const overallPercent = totalHours > 0 ? Math.round((completedHours / totalHours) * 100) : 0;
+    const memberCount = appState.members.length;
+    const fairSharePercent = memberCount > 0 ? (100 / memberCount) : 0;
+
+    // Calculate per-member metrics
+    const memberBreakdown = appState.members.map(member => {
+      const memberTasks = appState.tasks.filter(t => t.assigneeId === member.id);
+      const assignedHours = memberTasks.reduce((sum, t) => sum + Number(t.hours), 0);
+      const memberCompletedHours = memberTasks
+        .filter(t => t.completed)
+        .reduce((sum, t) => sum + Number(t.hours), 0);
+
+      // Share of total completed project effort
+      const shareOfCompleted = completedHours > 0
+        ? Math.round((memberCompletedHours / completedHours) * 100)
+        : 0;
+
+      // Determine status badge relative to fair share
+      let statusLabel = "On Track";
+      let badgeClass = "badge-good";
+
+      if (completedHours === 0) {
+        statusLabel = "No Work Logged";
+        badgeClass = "badge-warn";
+      } else if (shareOfCompleted < fairSharePercent - 12) {
+        statusLabel = "Behind Fair Share";
+        badgeClass = "badge-behind";
+      } else if (shareOfCompleted > fairSharePercent + 15) {
+        statusLabel = "Carrying Load";
+        badgeClass = "badge-warn";
+      }
+
+      return {
+        ...member,
+        assignedHours,
+        completedHours: memberCompletedHours,
+        shareOfCompleted,
+        tasksDone: memberTasks.filter(t => t.completed).length,
+        tasksTotal: memberTasks.length,
+        statusLabel,
+        badgeClass
+      };
+    });
+
+    return {
+      totalTasks,
+      completedTasks,
+      totalHours,
+      completedHours,
+      overallPercent,
+      memberCount,
+      fairSharePercent: fairSharePercent.toFixed(1),
+      memberBreakdown
+    };
+  }
+
+  function generateEvaluationSummary() {
+    const metrics = calculateProjectMetrics();
+    const todayStr = new Date().toLocaleDateString();
+
+    let lines = [
+      `PROJECT ACCOUNTABILITY REPORT - ${appState.projectName.toUpperCase()}`,
+      `Generated on: ${todayStr}`,
+      `Overall Progress: ${metrics.overallPercent}% (${metrics.completedHours}/${metrics.totalHours} effort hours completed)`,
+      `Target Equal Share: ${metrics.fairSharePercent}% per member`,
+      `------------------------------------------------------------`,
+      `INDIVIDUAL CONTRIBUTION BREAKDOWN:`
+    ];
+
+    metrics.memberBreakdown.forEach(m => {
+      lines.push(
+        `• ${m.name}: ${m.shareOfCompleted}% of completed effort (${m.completedHours}/${m.assignedHours} hrs) | Tasks: ${m.tasksDone}/${m.tasksTotal} | Status: [${m.statusLabel}]`
+      );
+    });
+
+    lines.push(`------------------------------------------------------------`);
+    lines.push(`TASK COMPLETION LOG:`);
+
+    appState.tasks.forEach(t => {
+      const owner = appState.members.find(m => m.id === t.assigneeId)?.name || "Unassigned";
+      const status = t.completed ? "[DONE]" : "[PENDING]";
+      lines.push(`${status} ${t.title} — ${owner} (${t.hours} hrs, Due: ${t.dueDate})`);
+    });
+
+    return lines.join("\n");
+  }
+
+  /* ==========================================================================
+     3. USER INTERFACE LAYER (Presentation & Event Handlers)
+     ========================================================================== */
+  function renderApp() {
+    const metrics = calculateProjectMetrics();
+
+    // Update overall metrics
+    document.getElementById("overallPercentText").textContent = `${metrics.overallPercent}%`;
+    document.getElementById("overallProgressBar").style.width = `${metrics.overallPercent}%`;
+    document.getElementById("hoursSummaryText").textContent = `${metrics.completedHours} / ${metrics.totalHours} effort hrs completed`;
+    document.getElementById("tasksSummaryText").textContent = `${metrics.completedTasks} / ${metrics.totalTasks} tasks`;
+    document.getElementById("memberCountText").textContent = metrics.memberCount;
+    document.getElementById("fairShareText").textContent = `${metrics.fairSharePercent}%`;
+
+    // Render member contribution cards
+    const memberStatsList = document.getElementById("memberStatsList");
+    memberStatsList.innerHTML = "";
+
+    metrics.memberBreakdown.forEach(m => {
+      const barColor = m.badgeClass === "badge-behind"
+        ? "var(--danger)"
+        : m.badgeClass === "badge-warn"
+        ? "var(--warning)"
+        : "var(--success)";
+
+      const div = document.createElement("div");
+      div.className = "member-item";
+      div.innerHTML = `
+        <div class="member-header">
+          <span>${escapeHtml(m.name)} <small style="color:var(--muted); font-weight:400;">(${m.completedHours}/${m.assignedHours} hrs)</small></span>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="badge ${m.badgeClass}">${m.statusLabel}</span>
+            <strong>${m.shareOfCompleted}%</strong>
+            ${appState.members.length > 1 ? `<button class="btn-danger-ghost" title="Remove Member" onclick="handleRemoveMember('${m.id}')">✕</button>` : ""}
+          </div>
+        </div>
+        <div class="progress-track" style="height: 8px;">
+          <div class="progress-fill" style="width: ${m.shareOfCompleted}%; background: ${barColor};"></div>
+        </div>
+      `;
+      memberStatsList.appendChild(div);
+    });
+
+    // Populate assignee dropdown
+    const assigneeSelect = document.getElementById("taskAssigneeSelect");
+    const currentVal = assigneeSelect.value;
+    assigneeSelect.innerHTML = appState.members
+      .map(m => `<option value="${m.id}">${escapeHtml(m.name)}</option>`)
+      .join("");
+    if (appState.members.some(m => m.id === currentVal)) {
+      assigneeSelect.value = currentVal;
+    }
+
+    // Render task list sorted by completion then due date
+    const taskListContainer = document.getElementById("taskListContainer");
+    taskListContainer.innerHTML = "";
+
+    const sortedTasks = [...appState.tasks].sort((a, b) => {
+      if (a.completed !== b.completed) return a.completed ? 1 : -1;
+      return a.dueDate.localeCompare(b.dueDate);
+    });
+
+    const todayISO = new Date().toISOString().split("T")[0];
+
+    sortedTasks.forEach(task => {
+      const assigneeName = appState.members.find(m => m.id === task.assigneeId)?.name || "Unassigned";
+      const isOverdue = !task.completed && task.dueDate < todayISO;
+
+      const row = document.createElement("div");
+      row.className = `task-row ${task.completed ? "completed" : ""}`;
+      row.innerHTML = `
+        <div class="task-left">
+          <input type="checkbox" ${task.completed ? "checked" : ""} onchange="handleToggleTask('${task.id}')" />
+          <div>
+            <div class="task-title">${escapeHtml(task.title)}</div>
+            <div style="font-size:0.78rem; color:var(--muted);">
+              Due: <span class="${isOverdue ? "overdue-tag" : ""}">${task.dueDate}${isOverdue ? " (OVERDUE)" : ""}</span>
+            </div>
+          </div>
+        </div>
+        <div class="task-meta">
+          <span class="pill">${escapeHtml(assigneeName)}</span>
+          <span class="pill">${task.hours} hrs</span>
+          <button class="btn-danger-ghost" onclick="handleDeleteTask('${task.id}')">Delete</button>
+        </div>
+      `;
+      taskListContainer.appendChild(row);
+    });
+  }
+
+  // User Actions
+  function handleAddMember(event) {
+    event.preventDefault();
+    const input = document.getElementById("newMemberInput");
+    const name = input.value.trim();
+    if (!name) return;
+
+    appState.members.push({
+      id: "m_" + Date.now(),
+      name
+    });
+    input.value = "";
+    saveState();
+    renderApp();
+  }
+
+  function handleRemoveMember(memberId) {
+    if (appState.members.length <= 1) return;
+    appState.members = appState.members.filter(m => m.id !== memberId);
+    // Reassign orphaned tasks to first remaining member
+    const fallbackId = appState.members[0].id;
+    appState.tasks.forEach(t => {
+      if (t.assigneeId === memberId) t.assigneeId = fallbackId;
+    });
+    saveState();
+    renderApp();
+  }
+
+  function handleAddTask(event) {
+    event.preventDefault();
+    const title = document.getElementById("taskTitleInput").value.trim();
+    const assigneeId = document.getElementById("taskAssigneeSelect").value;
+    const hours = parseInt(document.getElementById("taskHoursInput").value, 10) || 1;
+    const dueDate = document.getElementById("taskDueInput").value;
+
+    if (!title || !assigneeId || !dueDate) return;
+
+    appState.tasks.push({
+      id: "t_" + Date.now(),
+      title,
+      assigneeId,
+      hours,
+      dueDate,
+      completed: false
+    });
+
+    document.getElementById("taskTitleInput").value = "";
+    saveState();
+    renderApp();
+  }
+
+  function handleToggleTask(taskId) {
+    const task = appState.tasks.find(t => t.id === taskId);
+    if (task) {
+      task.completed = !task.completed;
+      saveState();
+      renderApp();
+    }
+  }
+
+  function handleDeleteTask(taskId) {
+    appState.tasks = appState.tasks.filter(t => t.id !== taskId);
+    saveState();
+    renderApp();
+  }
+
+  // Modal Handlers
+  function openReportModal() {
+    document.getElementById("reportTextArea").value = generateEvaluationSummary();
+    document.getElementById("reportModal").classList.add("open");
+  }
+
+  function closeReportModal() {
+    document.getElementById("reportModal").classList.remove("open");
+    document.getElementById("copyReportBtn").textContent = "Copy to Clipboard";
+  }
+
+  function copyReportToClipboard() {
+    const textarea = document.getElementById("reportTextArea");
+    textarea.select();
+    navigator.clipboard.writeText(textarea.value);
+    document.getElementById("copyReportBtn").textContent = "Copied!";
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // Set default date input to tomorrow and initialize UI
+  document.getElementById("taskDueInput").valueAsDate = new Date(Date.now() + 86400000);
+  renderApp();
+</script>
+</body>
+</html>
